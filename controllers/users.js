@@ -8,6 +8,7 @@ const router = express.Router();
 const SALT_LENGTH = 12;
 
 router.post('/signup', async (req, res) => {
+  console.log('req.body', req.body)
   try {
     // Check if the username is already taken
     const userInDatabase = await User.findOne({ username: req.body.username });

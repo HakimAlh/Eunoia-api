@@ -13,6 +13,7 @@ const verifyToken = require('./middleware/verify-token');
 const testJWTRouter = require('./controllers/test-jwt');
 const usersRouter = require('./controllers/users');
 const profilesRouter = require('./controllers/profiles');
+const bookCtrl = require('./controllers/books')
 
 const app = express();
 
@@ -22,13 +23,16 @@ app.use(express.json());
 
 // Public Routes
 app.use('/test-jwt', testJWTRouter);
-app.use('/users', usersRouter);
+app.use('/users', usersRouter); 
 
 // Protected Routes
 app.use(verifyToken);
+// Eunoia
+app.use('/books', bookCtrl)
+
 
 app.use('/profiles', profilesRouter);
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log('The express app is ready!');
+  console.log('Eunoia API is ready to be used!');
 });

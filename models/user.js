@@ -13,7 +13,6 @@ const userSchema = mongoose.Schema({
 
 userSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    // returnedObject.helloWorld = 'hahahahahahahah';
     delete returnedObject.hashedPassword;
   },
 });
