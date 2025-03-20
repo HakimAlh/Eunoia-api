@@ -1,10 +1,12 @@
 const express = require('express');
 
 const Book = require('../models/book.js');
+const verifyToken = require('../middleware/verify-token.js')
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+
+router.post('/', verifyToken, async (req, res) => {
     try {
       req.body.author = req.user._id;
       const book = await Book.create(req.body);
@@ -37,7 +39,7 @@ router.get('/:id', async (req,res) => {
 })
 
 
-router.delete('/:id', async (req,res) => {
+router.delete('/:id', verifyToken, async (req,res) => {
     try {
     const book = await Book.findByIdAndDelete(req.params.id)
     if(!book) throw new Error('Book not Found')
@@ -48,7 +50,7 @@ router.delete('/:id', async (req,res) => {
 })
 
 
-router.put('/:id', async (req,res) => {
+router.put('/:id', verifyToken, async (req,res) => {
     try {
     const book = await Book.findByIdAndUpdate(req.params.id, req.body, {new: true})
     if(!book) throw new Error('Book not Found')

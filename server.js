@@ -25,14 +25,13 @@ app.use(express.json());
 app.use('/test-jwt', testJWTRouter);
 app.use('/users', usersRouter); 
 
-// Protected Routes
-app.use(verifyToken);
 // Eunoia
 app.use('/books', bookCtrl)
 
 
+
 app.use('/profiles', profilesRouter);
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 5000, () => {
   console.log('Eunoia API is ready to be used!');
 });
