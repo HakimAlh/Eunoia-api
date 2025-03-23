@@ -1,65 +1,122 @@
-const express = require('express');
+// controllers/hoots.js
 
-const Book = require('../models/book.js');
-const verifyToken = require('../middleware/verify-token.js')
+const express = require("express");
+const verifyToken = require("../middleware/verify-token.js");
+const Book = require("../models/book.js");
 
 const router = express.Router();
 
+// ========== Public Routes ===========
 
-router.post('/', verifyToken, async (req, res) => {
-    try {
-      req.body.author = req.user._id;
-      const book = await Book.create(req.body);
-      book._doc.author = req.user;
-      res.status(201).json(book);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json(error);
-    }
-  });
+router.use(verifyToken);
 
-router.get('/', async (req,res) => {
-    try {
-    const books = await Book.find({})
-    .populate('author')
-    .sort({ createdAt: 'desc' })
-    res.status(200).json(books)
-    } catch (error) {
-    res.status(400).json({ error: `failed to load book ${error}` });    
-    }
-})
+router.get("/", async (req, res) => {
+	try {
+		const hoots = await Book.find({})
+			.populate("author")
+			.sort({ createdAt: "desc" });
+		res.status(200).json(hoots);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 
-router.get('/:id', async (req,res) => {
-    try {
-    const books = await Book.findById(req.params.id)
+router.get("/:bookId", async (req, res) => {
+	try {
+		const book = await Book.findById(req.params.bookId).populate([
+			"author",
+			"chapters.author",
+		]);
+		res.status(200).json(book);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 
-    if(!books) throw new Error ('Book not found')
-    res.status(200).json(books)
-    } catch (error) {
-    res.status(404).json({ error: `failed to get book ${error}` });    
-    }
-})
+// ========= Protected Routes =========
 
+router.post("/", async (req, res) => {
+	try {
+		req.body.author = req.user._id;
+		const book = await Book.create(req.body);
+		book._doc.author = req.user;
+		res.status(201).json(book);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json(error);
+	}
+});
 
-router.delete('/:id', verifyToken, async (req,res) => {
-    try {
-    const book = await Book.findByIdAndDelete(req.params.id)
-    if(!book) throw new Error('Book not Found')
-    res.status(200).json({success: true})
-    } catch (error) {
-    res.status(400).json({ error: `Unable to delete: ${error}` });    
-    }
-})
+router.put("/:bookId", async (req, res) => {
+	try {
+		const book = await Book.findById(req.params.bookId);
+		if (!book.author.equals(req.user._id)) {
+			return res.status(403).send("You're not allowed to do that!");
+		}
 
+		const updatedHoot = await Book.findByIdAndUpdate(
+			req.params.bookId,
+			req.body,
+			{ new: true }
+		);
+		updatedHoot._doc.author = req.user;
+		res.status(200).json(updatedBook);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 
-router.put('/:id', verifyToken, async (req,res) => {
-    try {
-    const book = await Book.findByIdAndUpdate(req.params.id, req.body, {new: true})
-    if(!book) throw new Error('Book not Found')
-    res.status(200).json(book)
-    } catch (error) {
-    res.status(422).json({ error: `Unable to update: ${error}` });    
-    }
-})
+router.delete("/:bookId", async (req, res) => {
+	try {
+		const book = await Book.findById(req.params.bookId);
+
+		if (!book.author.equals(req.user._id)) {
+			return res.status(403).send("You're not allowed to do that!");
+		}
+
+		const deletedBook = await Book.findByIdAndDelete(req.params.bookId);
+		res.status(200).json(deletedBook);
+	} catch (error) {
+		console.log(error);
+		res.status(500).json(error);
+	}
+});
+
+router.post("/:bookId/chapters", async (req, res) => {
+	try {
+		req.body.author = req.user._id;
+		const book = await Book.findById(req.params.bookId);
+		book.chapters.push(req.body);
+		await book.save();
+		const newChapter = book.chapters[book.chapters.length - 1];
+		newChapter._doc.author = req.user;
+		res.status(201).json(newChapter);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
+
+router.put("/:bookId/chapters/:chapterId", async (req, res) => {
+	try {
+		const book = await Book.findById(req.params.bookId);
+		const book = book.chapters.id(req.params.chapterId);
+		book.text = req.body.text;
+		await book.save();
+		res.status(200).json({ message: "Ok" });
+	} catch (err) {
+		res.status(500).json(err);
+	}
+});
+
+router.delete("/:bookId/chapters/:chapterId", async (req, res) => {
+	try {
+		const book = await Book.findById(req.params.bookId);
+		book.chapters.remove({ _id: req.params.chapterId });
+		await book.save();
+		res.status(200).json({ message: "Ok" });
+	} catch (err) {
+		res.status(500).json(err);
+	}
+});
 
 module.exports = router;
