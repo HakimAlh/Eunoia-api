@@ -54,12 +54,12 @@ router.put("/:bookId", async (req, res) => {
 			return res.status(403).send("You're not allowed to do that!");
 		}
 
-		const updatedHoot = await Book.findByIdAndUpdate(
+		const updatedBook = await Book.findByIdAndUpdate(
 			req.params.bookId,
 			req.body,
 			{ new: true }
 		);
-		updatedHoot._doc.author = req.user;
+		updatedBook._doc.author = req.user;
 		res.status(200).json(updatedBook);
 	} catch (error) {
 		res.status(500).json(error);
