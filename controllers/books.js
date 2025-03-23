@@ -8,12 +8,11 @@ const router = express.Router();
 
 // ========== Public Routes ===========
 
-router.use(verifyToken);
 
 router.get("/", async (req, res) => {
-	try {
-		const hoots = await Book.find({})
-			.populate("author")
+  try {
+    const hoots = await Book.find({})
+    .populate("author")
 			.sort({ createdAt: "desc" });
 		res.status(200).json(hoots);
 	} catch (error) {
@@ -22,8 +21,8 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:bookId", async (req, res) => {
-	try {
-		const book = await Book.findById(req.params.bookId).populate([
+  try {
+    const book = await Book.findById(req.params.bookId).populate([
 			"author",
 			"chapters.author",
 		]);
@@ -34,6 +33,7 @@ router.get("/:bookId", async (req, res) => {
 });
 
 // ========= Protected Routes =========
+router.use(verifyToken);
 
 router.post("/", async (req, res) => {
 	try {
@@ -99,8 +99,8 @@ router.post("/:bookId/chapters", async (req, res) => {
 router.put("/:bookId/chapters/:chapterId", async (req, res) => {
 	try {
 		const book = await Book.findById(req.params.bookId);
-		const book = book.chapters.id(req.params.chapterId);
-		book.text = req.body.text;
+		const chapter = book.chapters.id(req.params.chapterId);
+		chapter.text = req.body.text;
 		await book.save();
 		res.status(200).json({ message: "Ok" });
 	} catch (err) {
