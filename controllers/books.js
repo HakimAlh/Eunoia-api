@@ -24,7 +24,6 @@ router.get("/:bookId", async (req, res) => {
   try {
     const book = await Book.findById(req.params.bookId).populate([
 			"author",
-			"chapters.author",
 		]);
 		res.status(200).json(book);
 	} catch (error) {
