@@ -32,6 +32,6 @@ app.use('/books', bookCtrl)
 
 app.use('/profiles', profilesRouter);
 
-app.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log('Eunoia API is ready to be used!');
 });

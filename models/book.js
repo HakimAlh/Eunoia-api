@@ -13,7 +13,8 @@ const chapterSchema = mongoose.Schema({
     }
 })
 
-const bookSchema = mongoose.Schema({
+const bookSchema = new mongoose.Schema(
+    {
     title: {
         type: String,
         required: true
@@ -26,9 +27,9 @@ const bookSchema = mongoose.Schema({
         type: String,
         required: false,
     enum: ['Guide', 'Novel', 'Fiction', 'Non-Fiction', 'General', 'History'],
+},
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     chapters: [chapterSchema],
-    }
 })
 
 const Book = mongoose.model('Book', bookSchema);

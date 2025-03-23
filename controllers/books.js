@@ -21,6 +21,8 @@ router.post('/', verifyToken, async (req, res) => {
 router.get('/', async (req,res) => {
     try {
     const books = await Book.find({})
+    .populate('author')
+    .sort({ createdAt: 'desc' })
     res.status(200).json(books)
     } catch (error) {
     res.status(400).json({ error: `failed to load book ${error}` });    
