@@ -5,7 +5,7 @@ const chapterSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    number: {
+    content: {
         type: String,
         required: true,
         content: String,
