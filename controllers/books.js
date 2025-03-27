@@ -11,10 +11,10 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const hoots = await Book.find({})
+    const books = await Book.find({})
     .populate("author")
 			.sort({ createdAt: "desc" });
-		res.status(200).json(hoots);
+		res.status(200).json(books);
 	} catch (error) {
 		res.status(500).json(error);
 	}
@@ -81,7 +81,7 @@ router.delete("/:bookId", async (req, res) => {
 	}
 });
 
-router.post("/:bookId/chapters", async (req, res) => {
+router.post("/:bookId/chapter", async (req, res) => {
 	try {
 		req.body.author = req.user._id;
 		const book = await Book.findById(req.params.bookId);

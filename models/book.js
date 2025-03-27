@@ -21,11 +21,11 @@ const bookSchema = new mongoose.Schema(
     },
     cover: {
         type: String,
-        required: true
+        required: false
     },
     description: {
         type: String,
-        required: true
+        required: false
     },
     category: {
         type: String,
