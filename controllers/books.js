@@ -1,4 +1,3 @@
-// controllers/hoots.js
 
 const express = require("express");
 const verifyToken = require("../middleware/verify-token.js");
