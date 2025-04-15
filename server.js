@@ -10,7 +10,6 @@ const cors = require('cors');
 const verifyToken = require('./middleware/verify-token');
 
 // Controllers
-const testJWTRouter = require('./controllers/test-jwt');
 const usersRouter = require('./controllers/users');
 const profilesRouter = require('./controllers/profiles');
 const bookCtrl = require('./controllers/books')
@@ -22,7 +21,6 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 // Public Routes
-app.use('/test-jwt', testJWTRouter);
 app.use('/users', usersRouter); 
 
 // Eunoia
